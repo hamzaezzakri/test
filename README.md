@@ -2,4 +2,4 @@
 
 secure a backend using spring boot
 
-![jwt + spring security](https://user-images.githubusercontent.com/96351754/173422608-3d53d684-9f4c-452e-900e-f33d9708c829.jpg)
+![jwt + spring security](https://user-images.githubusercontent.com/96351754/173425950-8d08fe72-cf28-431c-8519-2e2fb4ecc010.jpg)
