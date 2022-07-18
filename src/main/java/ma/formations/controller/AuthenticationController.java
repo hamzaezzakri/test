@@ -1,7 +1,6 @@
 package ma.formations.controller;
 
 import ma.formations.dto.RoleDTO;
-import ma.formations.dto.TokenDTO;
 import ma.formations.dto.UserDTO;
 import ma.formations.jwt.JwtUtils;
 import ma.formations.service.IUserService;
@@ -58,7 +57,7 @@ public class AuthenticationController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) throws MessagingException, UnsupportedEncodingException {
 
         if(userService.existsByUsername(userDTO.getUsername()))
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+            return ResponseEntity.badRequest().body("Error: Username is already taken! ");
 
         //par défaut, l'utilisateur a le rôle client
         userDTO.getRoles().add(new RoleDTO("CLIENT"));

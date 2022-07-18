@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author Hamza Ezzakri
- * @CreatedAt 6/11/2022 2:15 PM
+ * @CreatedAt 6/25/2022 11:04 PM
  */
 
 @Mapper(componentModel = "spring")
@@ -19,3 +19,4 @@ public interface RoleMapper {
     List<RoleDTO> toRoleDTO(List<Role> roles);
     List<Role> toRole(List<RoleDTO> roleDTOS);
 }
+

@@ -37,6 +37,8 @@ public class AuthorizationTokenFilter extends OncePerRequestFilter {
 
         response.addHeader("Access-Control-Allow-Origin","*");
         response.addHeader("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, PATCH");
+        response.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Accept, Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authortization");
+        response.addHeader("Access-Control-Expose-Headers","Access-Control-Allow-Origin, Access-Control-All-Credentials,Authortization");
 
         if(request.getMethod().equals("OPTIONS")){
 

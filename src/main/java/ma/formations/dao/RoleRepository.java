@@ -4,6 +4,7 @@ import ma.formations.service.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Hamza Ezzakri
@@ -12,6 +13,6 @@ import java.util.List;
 
 public interface RoleRepository extends JpaRepository<Role,Integer> {
 
-    List<Role> findByRole(String role);
+    Role findByRole(String role);
     boolean existsByRole(String role);
 }

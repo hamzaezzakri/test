@@ -2,6 +2,7 @@ package ma.formations.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import ma.formations.oauth2.OAuth2UserImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,18 @@ public class JwtUtils {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .claim("roles",userPrincipal.getAuthorities())
+                .signWith(SignatureAlgorithm.HS512,jwtSecret)
+                .compact();
+    }
+
+    public String generateOAuth2JwtToken(Authentication authentication){
+
+        OAuth2UserImpl oAuth2User = (OAuth2UserImpl) authentication.getPrincipal();
+        return Jwts.builder()
+                .setSubject(oAuth2User.getFullName())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .claim("roles","USER")
                 .signWith(SignatureAlgorithm.HS512,jwtSecret)
                 .compact();
     }

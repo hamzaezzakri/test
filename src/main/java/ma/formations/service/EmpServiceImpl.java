@@ -3,13 +3,18 @@ package ma.formations.service;
 import ma.formations.dao.EmpRepository;
 import ma.formations.dto.EmpDTO;
 import ma.formations.mapper.EmpMapper;
+import ma.formations.service.model.Emp;
+import ma.formations.service.model.Etat;
+import ma.formations.service.model.Sexe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Hamza Ezzakri
@@ -28,13 +33,61 @@ public class EmpServiceImpl implements IEmpService{
     @Override
     public List<EmpDTO> getEmployees() {
 
-        return empMapper.toEmpDTO(empRepository.findAll());
+        return empMapper.toEmpDTO(empRepository.findAll()
+                .stream()
+                .filter(emp -> emp.isEnabled())
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public EmpDTO convertToString(EmpDTO empDTO){
+
+        if(empDTO.getEtat() != null) {
+            if (empDTO.getEtat().equals(Etat.EN_ATTENTE.name())) {
+                empDTO.setEtat(Etat.EN_ATTENTE.name().replace("_", " ").toLowerCase());
+            } else {
+                empDTO.setEtat(empDTO.getEtat().toLowerCase());
+            }
+        }
+        return empDTO;
     }
 
     @Override
     public void save(EmpDTO empDTO) {
 
-        empRepository.save(empMapper.toEmp(empDTO));
+        Emp emp = empMapper.toEmp(empDTO);
+        emp.setEtat(Etat.EN_ATTENTE);
+        emp.setCreatedAt(LocalDateTime.now());
+        emp.setEnabled(true);
+        empRepository.save(emp);
+    }
+
+    @Override
+    public void update(EmpDTO empDTO, long id){
+
+        Emp oldEmp = empRepository.findById(id).get();
+        empDTO.setId(oldEmp.getId());
+        EmpDTO newEmpDTO = convertToEtat(empDTO);
+        Emp newEmp = empMapper.toEmp(newEmpDTO);
+        newEmp.setEnabled(oldEmp.isEnabled());
+        newEmp.setCreatedAt(oldEmp.getCreatedAt());
+        empRepository.save(newEmp);
+    }
+
+    @Override
+    public EmpDTO convertToEtat(EmpDTO empDTO){
+
+        if(empDTO.getEtat() != null) {
+            if (empDTO.getEtat().equals("en attente")) {
+                empDTO.setEtat(Etat.EN_ATTENTE.name());
+            } else {
+                empDTO.setEtat(empDTO.getEtat().toUpperCase());
+            }
+        }
+        else{
+            empDTO.setEtat(Etat.EN_ATTENTE.name());
+        }
+        return empDTO;
     }
 
     @Override
@@ -88,5 +141,10 @@ public class EmpServiceImpl implements IEmpService{
     public List<EmpDTO> sortBy(String fieldName) {
 
         return empMapper.toEmpDTO(empRepository.findAll(Sort.by(fieldName)));
+    }
+
+    @Override
+    public EmpDTO convertSexe(EmpDTO empDTO) {
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package ma.formations.service;
 
 import ma.formations.dto.EmpDTO;
+import ma.formations.service.model.RendezVous;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public interface IEmpService {
 
     List<EmpDTO> getEmployees();
     void save(EmpDTO empDTO);
+    void update(EmpDTO empDTO,long id);
     EmpDTO getEmpById(Long id);
     void delete(Long id);
     List<EmpDTO> findBySalary(Double salary);
@@ -23,4 +25,7 @@ public interface IEmpService {
     List<EmpDTO> findAll(int pageId, int size);
     //pour le tri
     List<EmpDTO> sortBy(String fieldName);
+    EmpDTO convertSexe(EmpDTO empDTO);
+    EmpDTO convertToString(EmpDTO empDTO);
+    EmpDTO convertToEtat(EmpDTO empDTO);
 }

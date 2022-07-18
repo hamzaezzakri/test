@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author Hamza Ezzakri
- * @CreatedAt 6/1/2022 7:41 PM
+ * @CreatedAt 6/25/2022 10:54 PM
  */
 
 @Data
@@ -16,6 +16,7 @@ public class EmpDTO {
     private String name;
     private Double salary;
     private String fonction;
+    private String etat;
 
     public EmpDTO(String name, Double salary, String fonction) {
         this.name = name;

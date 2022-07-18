@@ -2,6 +2,9 @@ package ma.formations.configuration;
 
 import ma.formations.jwt.AuthEntryPointJwt;
 import ma.formations.jwt.AuthorizationTokenFilter;
+import ma.formations.jwt.JwtUtils;
+import ma.formations.oauth2.OAuth2LoginSuccessHandler;
+import ma.formations.oauth2.OAuth2UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +14,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author Hamza Ezzakri
@@ -31,9 +33,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthEntryPointJwt unauthorizedHnadler;
     @Autowired
     private AuthorizationTokenFilter authorizationTokenFilter;
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired private OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+    @Autowired private OAuth2UserServiceImpl oAuth2UserService;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder(){
 
         return new BCryptPasswordEncoder();
     }
@@ -54,14 +60,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                .cors()
-                .and()
-                .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHnadler)
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests().antMatchers("/auth/**").permitAll()
+                //.cors()
+                //.and()
+                //.csrf().disable()
+                //.exceptionHandling().authenticationEntryPoint(unauthorizedHnadler)
+                //.and()
+                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                //.and()
+                .authorizeRequests().antMatchers("/auth/**","/login","/","/oauth2/**").permitAll()
                 .antMatchers("/employees/**").hasAnyAuthority("ADMIN","CLIENT")
                 .antMatchers("/articles/**").hasAnyAuthority("ADMIN","CLIENT")
                 .antMatchers("/categories/**").hasAnyAuthority("ADMIN","CLIENT")
@@ -70,7 +76,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/client/**").hasAuthority("CLIENT")
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .formLogin()
+                    //.loginPage("/login")
+                    //.defaultSuccessUrl("/")
+                .and()
+                .oauth2Login()
+                    //.loginPage("/login")
+                    .userInfoEndpoint().userService(oAuth2UserService)
+                    .and()
+                    .successHandler(oauth2LoginSuccessHandler);
+                //.and()
+                //.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 //.addFilter(new AuthenticationTokenFilter(authenticationManager(),jwtUtils));
     }
 

@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +41,7 @@ public class UserServiceImpl implements IUserService{
     @Autowired
     private EmpRepository empRepository;
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder PasswordEncoder;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -57,10 +57,10 @@ public class UserServiceImpl implements IUserService{
     public UserDTO save(UserDTO userDTO) {
 
         User user = userMapper.toUser(userDTO);
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassword(PasswordEncoder.encode(user.getPassword()));
         List<Role> rolesPersist = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            Role userRole = roleRepository.findByRole(role.getRole()).get(0);
+            Role userRole = roleRepository.findByRole(role.getRole());
             rolesPersist.add(userRole);
         }
         user.setRoles(rolesPersist);
@@ -88,7 +88,7 @@ public class UserServiceImpl implements IUserService{
     @Override
     public RoleDTO getRoleByName(String role) {
 
-        return roleMapper.toRoleDTO(roleRepository.findByRole(role).get(0));
+        return roleMapper.toRoleDTO(roleRepository.findByRole(role));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class UserServiceImpl implements IUserService{
             throw new BusinessException("the provided username or role does not exist, please enter valid data!!!");
 
         User user = userRepository.findByUsername(username);
-        Role newRole = roleRepository.findByRole(role).get(0);
+        Role newRole = roleRepository.findByRole(role);
         user.getRoles().add(newRole);
         userRepository.save(user);
         return userMapper.toUserDTO(user);

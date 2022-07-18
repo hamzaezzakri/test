@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Hamza Ezzakri
@@ -33,7 +34,9 @@ public class EmpController {
     @GetMapping(value = "/employees")
     public List<EmpDTO> getAll() {
 
-        return empService.getEmployees();
+        return empService.getEmployees().stream()
+                .map(emp -> empService.convertToString(emp))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -62,15 +65,14 @@ public class EmpController {
     /**
      * Pour modifier un employé par son id
      */
-    @PutMapping(value = "/admin/update/{id}")
+    @PatchMapping(value = "/admin/update/{id}")
     public ResponseEntity<Object> updateEmp(@PathVariable(name = "id") Long empDTOid, @Valid @RequestBody EmpDTO empDTO) {
 
         EmpDTO empDTOfound = empService.getEmpById(empDTOid);
         if (empDTOfound == null)
-            return new ResponseEntity<>("employee doen't exist", HttpStatus.OK);
+            return new ResponseEntity<>("employee doesn't exist", HttpStatus.OK);
 
-        empDTO.setId(empDTOid);
-        empService.save(empDTO);
+        empService.update(empDTO, empDTOid);
         return new ResponseEntity<>("Employee is updated successfully", HttpStatus.OK);
     }
 

@@ -2,10 +2,8 @@ package ma.formations.service.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * @author Hamza Ezzakri
@@ -24,4 +22,8 @@ public class Emp {
     private String name;
     private Double salary;
     private String fonction;
+    @Enumerated(EnumType.STRING)
+    private Etat etat;
+    private LocalDateTime createdAt;
+    private boolean isEnabled;
 }
