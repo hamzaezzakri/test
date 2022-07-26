@@ -1,6 +1,7 @@
 package ma.formations.configuration;
 
 import ma.formations.jwt.AuthEntryPointJwt;
+import ma.formations.jwt.AuthenticationTokenFilter;
 import ma.formations.jwt.AuthorizationTokenFilter;
 import ma.formations.jwt.JwtUtils;
 import ma.formations.oauth2.OAuth2LoginSuccessHandler;
@@ -14,9 +15,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author Hamza Ezzakri
@@ -60,13 +63,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                //.cors()
-                //.and()
-                //.csrf().disable()
-                //.exceptionHandling().authenticationEntryPoint(unauthorizedHnadler)
-                //.and()
-                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                //.and()
+                .cors()
+                .and()
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHnadler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
                 .authorizeRequests().antMatchers("/auth/**","/login","/","/oauth2/**").permitAll()
                 .antMatchers("/employees/**").hasAnyAuthority("ADMIN","CLIENT")
                 .antMatchers("/articles/**").hasAnyAuthority("ADMIN","CLIENT")
@@ -76,18 +79,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/client/**").hasAuthority("CLIENT")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
+                //.formLogin()
                     //.loginPage("/login")
                     //.defaultSuccessUrl("/")
-                .and()
-                .oauth2Login()
-                    //.loginPage("/login")
-                    .userInfoEndpoint().userService(oAuth2UserService)
-                    .and()
-                    .successHandler(oauth2LoginSuccessHandler);
                 //.and()
-                //.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                //.addFilter(new AuthenticationTokenFilter(authenticationManager(),jwtUtils));
+                //.oauth2Login()
+                    //.loginPage("/login")
+                    //.userInfoEndpoint().userService(oAuth2UserService)
+                    //.and()
+                    //.successHandler(oauth2LoginSuccessHandler);
+                //.and()
+                .addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new AuthenticationTokenFilter(authenticationManager(),jwtUtils));
     }
 
     @Override
